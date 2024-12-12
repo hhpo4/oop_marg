@@ -1,0 +1,29 @@
+world
+football
+world championship
+command
+male
+2000
+Cristiano Ronaldo
+Portugal
+5
+WR-001
+common
+tennis
+world championship
+command
+female
+2000
+maria sharapova
+russia
+5
+olympic
+tennis
+world championship
+command
+female
+2024
+maria sharapova
+russia
+5
+paris

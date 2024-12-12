@@ -1,51 +1,51 @@
-#ifndef RECORD_H 
-#define RECORD_H 
+#ifndef RECORD_H
+#define RECORD_H
 
-#include <iostream> 
-#include <fstream> 
-#include <string> 
+#include <string>
+#include <iostream>
 
-using namespace std; 
+class Record {
+protected:
+    std::string sport;
+    std::string discipline;
+    std::string type;
+    std::string gender;
+    int year;
+    std::string name;
+    std::string country;
+    double achievement;
 
-class Record { 
-private: 
-    string sport; 
-    string discipline; 
-    string type; 
-    string gender; 
-    int year; 
-    string name; 
-    string country; 
-    double achievement; 
-
-public: 
+public:
     Record();
-    Record(const string& sport, const string& discipline, const string& type, const string& gender, int year, const string& name, const string& country, double achievement);
+    Record(const std::string& sport, const std::string& discipline, const std::string& type,
+           const std::string& gender, int year, const std::string& name,
+           const std::string& country, double achievement);
 
-    string getSport() const { return sport; } 
-    string getDiscipline() const { return discipline; } 
-    string getType() const { return type; } 
-    string getGender() const { return gender; } 
-    int getYear() const { return year; } 
-    string getName() const { return name; } 
-    string getCountry() const { return country; } 
-    double getAchievement() const { return achievement; } 
+    virtual ~Record() {}
 
-    void setSport(const string& sport) { this->sport = sport; } 
-    void setDiscipline(const string& discipline) { this->discipline = discipline; } 
-    void setType(const string& type) { this->type = type; } 
-    void setGender(const string& gender) { this->gender = gender; } 
-    void setYear(int year) { this->year = year; } 
-    void setName(const string& name) { this->name = name; } 
-    void setCountry(const string& country) { this->country = country; } 
-    void setAchievement(double achievement) { this->achievement = achievement; } 
+    // Геттеры
+    std::string getSport() const { return sport; }
+    std::string getDiscipline() const { return discipline; }
+    std::string getType() const { return type; }
+    std::string getGender() const { return gender; }
+    int getYear() const { return year; }
+    std::string getName() const { return name; }
+    std::string getCountry() const { return country; }
+    double getAchievement() const { return achievement; }
 
-    bool operator==(const Record& anotherRecord);
+    // Сеттеры
+    void setSport(const std::string& sport) { this->sport = sport; }
+    void setDiscipline(const std::string& discipline) { this->discipline = discipline; }
+    void setType(const std::string& type) { this->type = type; }
+    void setGender(const std::string& gender) { this->gender = gender; }
+    void setYear(int year) { this->year = year; }
+    void setName(const std::string& name) { this->name = name; }
+    void setCountry(const std::string& country) { this->country = country; }
+    void setAchievement(double achievement) { this->achievement = achievement; }
 
-    friend ostream& operator<<(ostream& stream, const Record& anotherRecord);
-    friend istream& operator>>(istream& stream, Record& anotherRecord);
-    friend ofstream& operator<<(ofstream& stream, const Record& anotherRecord);
-    friend ifstream& operator>>(ifstream& stream, Record& anotherRecord);
-}; 
+    virtual void display() const;
+    virtual void readFromFile(std::istream& file);
+    virtual void writeToFile(std::ostream& file) const;
+};
 
-#endif 
+#endif

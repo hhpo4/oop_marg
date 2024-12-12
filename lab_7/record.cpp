@@ -1,98 +1,62 @@
 #include "record.h"
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 
-Record::Record() {
-	sport = "";
-	discipline = "";
-	type = "";
-	gender = "";
-	year = 0;
-	name = "";
-	country = "";
-	achievement = 0;
+Record::Record()
+    : sport(""), discipline(""), type(""), gender(""),
+      year(0), name(""), country(""), achievement(0.0) {}
+
+Record::Record(const std::string& sport, const std::string& discipline, const std::string& type,
+               const std::string& gender, int year, const std::string& name,
+               const std::string& country, double achievement)
+    : sport(sport), discipline(discipline), type(type), gender(gender),
+      year(year), name(name), country(country), achievement(achievement) {}
+
+void Record::display() const {
+    std::cout << "Спорт: " << sport << "\n"
+              << "Дисциплина: " << discipline << "\n"
+              << "Тип: " << type << "\n"
+              << "Пол: " << gender << "\n"
+              << "Год: " << year << "\n"
+              << "Имя: " << name << "\n"
+              << "Страна: " << country << "\n"
+              << "Достижение: " << achievement << "\n";
 }
 
-Record::Record(const string& sport, const string& discipline, const string& type, const string& gender, int year, const string& name, const string& country, double achievement) {
-	this->sport = sport;
-	this->discipline = discipline;
-	this->type = type;
-	this->gender = gender;
-	this->year = year;
-	this->name = name;
-	this->country = country;
-	this->achievement = achievement;
+void Record::readFromFile(std::istream& file) {
+	std::string tmpLine;
+
+	std::getline(file, sport);
+	std::getline(file, discipline);
+	std::getline(file, type);
+	std::getline(file, gender);
+
+	// Проверка и обработка строки для year
+	if (std::getline(file, tmpLine) && !tmpLine.empty()) {
+		year = std::stoi(tmpLine);
+	} else {
+		throw std::invalid_argument("Некорректный формат года");
+	}
+
+	std::getline(file, name);
+	std::getline(file, country);
+
+	// Проверка и обработка строки для achievement
+	if (std::getline(file, tmpLine) && !tmpLine.empty()) {
+		achievement = std::stod(tmpLine);
+	} else {
+		throw std::invalid_argument("Некорректный формат достижения");
+	}
 }
 
-ofstream& operator<<(ofstream& stream, const Record& anotherRecord) {
-	stream << anotherRecord.sport << endl;
-	stream << anotherRecord.discipline << endl;
-	stream << anotherRecord.type << endl;
-	stream << anotherRecord.gender << endl;
-	stream << anotherRecord.year << endl;
-	stream << anotherRecord.name << endl;
-	stream << anotherRecord.country << endl;
-	stream << anotherRecord.achievement << endl;
-	return stream;
-}
-
-ifstream& operator>>(ifstream& stream, Record& anotherRecord) {
-	getline(stream, anotherRecord.sport);
-	getline(stream, anotherRecord.discipline);
-	getline(stream, anotherRecord.type);
-	getline(stream, anotherRecord.gender);
-	stream >> anotherRecord.year;
-	stream.ignore();
-	getline(stream, anotherRecord.name);
-	getline(stream, anotherRecord.country);
-	stream >> anotherRecord.achievement;
-	stream.ignore();
-	return stream;
-}
-
-ostream& operator<<(ostream& stream, const Record& anotherRecord) {
-	cout << "Спорт: " << anotherRecord.sport << "\n";     
-	cout << "Дисциплина: " << anotherRecord.discipline << "\n";     
-	cout << "Тип: " << anotherRecord.type << "\n";     
-	cout << "Гендер: " << anotherRecord.gender << "\n";     
-	cout << "Год: " << anotherRecord.year << "\n";     
-	cout << "Рекордсмен: " << anotherRecord.name << "\n";     
-	cout << "Страна: " << anotherRecord.country << "\n";     
-	cout << "Значение рекорда: " << anotherRecord.achievement << "\n";
-	return stream;
-}
-
-istream& operator>>(istream& stream, Record& anotherRecord) {
-	string tmpLine;
-    cout << "Введите вид спорта: "; 
-	cin.ignore();
-	getline(stream, anotherRecord.sport);
-    cout << "Введите дисциплину: "; 
-	getline(stream, anotherRecord.discipline);
-	cout << "Введите тип: "; 
-	getline(stream, anotherRecord.type);
-	cout << "Введите пол: "; 
-	getline(stream, anotherRecord.gender);
-	cout << "Введите год: "; 
-	getline(stream, tmpLine);
-	anotherRecord.year = stoi(tmpLine);
-	cout << "Введите имя рекордсмена: "; 
-	getline(stream, anotherRecord.name);
-	cout << "Введите страну: ";
-	getline(stream, anotherRecord.country);
-	cout << "Введите значение рекорда: "; 
-	getline(stream, tmpLine);
-	anotherRecord.achievement = stod(tmpLine);
-	return stream;
-}
-
-bool Record::operator==(const Record& anotherRecord) {
-	return (
-		this->sport == anotherRecord.sport &&
-		this->discipline == anotherRecord.discipline &&
-		this->type == anotherRecord.type &&
-		this->gender == anotherRecord.gender &&
-		this->year == anotherRecord.year &&
-		this->name == anotherRecord.name &&
-		this->country == anotherRecord.country &&
-		this->achievement == anotherRecord.achievement
-	);
+void Record::writeToFile(std::ostream& file) const {
+    file << sport << "\n"
+         << discipline << "\n"
+         << type << "\n"
+         << gender << "\n"
+         << year << "\n"
+         << name << "\n"
+         << country << "\n"
+         << achievement << "\n";
 }

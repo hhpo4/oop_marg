@@ -1,40 +1,25 @@
-#ifndef RECORD_CONT_H 
-#define RECORD_CONT_H 
+#ifndef RECORD_CONT_H
+#define RECORD_CONT_H
 
-#include <vector> 
-#include <fstream> 
-#include <iostream> 
+#include "record.h"
+#include <string>
 
-#include "record.h" 
-#include "recordOlympic.h"
+class RecordContainer {
+private:
+    Record** records;
+    unsigned int capacity;
+    unsigned int size;
 
-using namespace std; 
+public:
+    RecordContainer(unsigned int initialCapacity);
+    ~RecordContainer();
 
-class RecordContainer { 
-private: 
-    Record* records; 
-    RecordOlympic* olympicRecords;
-    
-    unsigned int maxRecords;
-    unsigned int numRecords;
-    unsigned int maxOlympicRecords;
-    unsigned int numOlympicRecords;
+    void addRecord(Record* newRecord);
+    void loadFromFile(const std::string& filename);
+    void saveToFile(const std::string& filename) const;
+    void displayAll() const;
+    void findWomenRecords2024() const;
+    int countRecordsBySport(const std::string& sport) const;
+};
 
-    unsigned int firstCommonRecordIndex;
-    unsigned int firstOlympicRecordIndex;
-    unsigned int lastOlympicRecordIndex;
-public: 
-    RecordContainer(unsigned int maxRecords, unsigned int numRecords, unsigned int maxOlympicRecords, unsigned int numOlympicRecords);  
-    ~RecordContainer(); 
-
-    void loadFromFile(const string& filename); 
-    void saveToFile(const string& filename); 
-    void displayAll();
-    int count_Records(const string& sport);
-    void RecWomen();
-
-    void operator +=(const Record& newRecord);
-    void operator +=(const RecordOlympic& newRecordOlympic);
-}; 
-
-#endif 
+#endif

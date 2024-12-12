@@ -1,0 +1,44 @@
+football
+world championship
+command
+male
+2000
+Cristiano Ronaldo
+Portugal
+5
+WR-001
+tennis
+world championship
+command
+female
+2000
+maria sharapova
+russia
+5
+tennis
+world championship
+command
+female
+2024
+maria sharapova
+russia
+5
+paris
+Плавание
+Баттерфляй
+Индивидуальный
+мужчина
+2024
+Майкл Фелпс
+США
+50.2
+WR-2024-001
+Легкая атлетика
+Бег на 100м
+Индивидуальный
+женщина
+2024
+Шелли-Энн Фрейзер-Прайс
+Ямайка
+10.61
+Париж

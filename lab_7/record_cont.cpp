@@ -1,118 +1,93 @@
-#include "record_cont.h" 
-#include <iostream> 
-#include <fstream> 
+#include "record_cont.h"
+#include "recordOlympic.h"
+#include "worldRecord.h"
+#include <fstream>
+#include <iostream>
+#include <string>
 
-RecordContainer::RecordContainer(unsigned int maxRecords, unsigned int numRecords, unsigned int maxOlympicRecords, unsigned int numOlympicRecords) {
-    this->maxRecords = maxRecords;
-    this->numRecords = numRecords;
+RecordContainer::RecordContainer(unsigned int initialCapacity)
+    : capacity(initialCapacity), size(0) {
+    records = new Record*[capacity];
+}
 
-    this->maxOlympicRecords = maxOlympicRecords;
-    this->numOlympicRecords = numOlympicRecords;
+RecordContainer::~RecordContainer() {
+    for (unsigned int i = 0; i < size; ++i) {
+        delete records[i];
+    }
+    delete[] records;
+}
 
-    firstCommonRecordIndex = 0;
-    firstOlympicRecordIndex = maxRecords;
-    lastOlympicRecordIndex = maxRecords + numOlympicRecords;
-
-    records = new Record[maxRecords]; 
-    olympicRecords = new RecordOlympic[maxOlympicRecords];
-} 
-
-RecordContainer::~RecordContainer() { 
-    delete[] records; 
-} 
-
-//добавить сайт в контейнер
-void RecordContainer::operator +=(const Record& newRecord) { 
-    if (numRecords <= maxRecords) { 
-        records[numRecords++] = newRecord;
+void RecordContainer::addRecord(Record* newRecord) {
+    if (size < capacity) {
+        records[size++] = newRecord;
     } else {
-        cout << "Достигнуто максимальное количество записей." << endl; 
+        std::cout << "Достигнуто максимальное количество записей." << std::endl;
     }
 }
 
-void RecordContainer::operator +=(const RecordOlympic& newRecordOlympic) { 
-    if (numOlympicRecords <= maxOlympicRecords) { 
-        olympicRecords[numOlympicRecords++] = newRecordOlympic;
-    } else {
-        cout << "Достигнуто максимальное количество олимпийских записей." << endl; 
-    }
-}
+void RecordContainer::loadFromFile(const std::string& filename) {
+    std::ifstream file(filename);
 
-//загрузить данные с файла
-void RecordContainer::loadFromFile(const string& filename) {
-    ifstream file(filename); 
-    if (file.is_open()) { 
-        for (int i = 0; i < numRecords; i++) { 
-            file >> records[i];
-        }
-        for (int i = 0; i < numOlympicRecords; i++) {
-            file >> olympicRecords[i];
-        }
-    } else {
-        cerr << "Ошибка открытия файла для чтения!" << endl; 
+    if (!file.is_open()) {
+        std::cerr << "Не удалось открыть файл для чтения." << std::endl;
+        return;
     }
 
-    file.close(); 
-} 
-
-//сохранение
-void RecordContainer::saveToFile(const string& filename) { 
-    ofstream file(filename); 
-    if (file.is_open()) { 
-        for (int i = 0; i < numRecords; i++) { 
-            file << records[i];
-        }
+    while (!file.eof()) {
+        std::string type;
+        getline(file, type);
         
-        for (int i = 0; i < numOlympicRecords; i++) {
-            file << olympicRecords[i];
+        Record* record = nullptr;
+
+        if (type == "olympic") {
+            record = new RecordOlympic();
+        } else if (type == "world") {
+            record = new WorldRecord();
+        } else if (type == "common") {
+            record = new Record();
         }
-    } else {
-        cerr << "Ошибка открытия файла для записи!" << endl; 
-    }
-    file.close(); 
-} 
 
-//вывод данных в консоль 
-void RecordContainer::displayAll() {
-    for (int i = 0; i < numRecords; i++) {
-        cout << records[i] << endl;
+        record->readFromFile(file);
+        addRecord(record);
+    }
+    file.close();
+}
+
+void RecordContainer::saveToFile(const std::string& filename) const {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Не удалось открыть файл для записи." << std::endl;
+        return;
     }
 
-    for (int i = 0; i < numOlympicRecords; i++) {
-        cout << olympicRecords[i] << endl;
+    for (unsigned int i = 0; i < size; ++i) {
+        records[i]->writeToFile(file);
+    }
+    file.close();
+}
+
+void RecordContainer::displayAll() const {
+    for (unsigned int i = 0; i < size; ++i) {
+        records[i]->display();
+        std::cout << "-----------------------------" << std::endl;
     }
 }
 
-// Функция для подсчета записей по виду спорта 
-//не работает
-int RecordContainer::count_Records(const string& sport) { 
-    int k = 0; 
-    for (int i = 0; i < numRecords; i++) { 
-        if (records[i].getSport() == sport) { 
-            k++; 
-        } 
-    } 
-
-    for (int i = 0; i < numOlympicRecords; i++) {
-        if (olympicRecords[i].getSport() == sport) {
-            k++;
+void RecordContainer::findWomenRecords2024() const {
+    for (unsigned int i = 0; i < size; ++i) {
+        if (records[i]->getGender() == "female" && records[i]->getYear() == 2024) {
+            records[i]->display();
+            std::cout << "-----------------------------" << std::endl;
         }
     }
-    return k; 
-} 
+}
 
-// Функция для отображения рекордов женщин 
-void RecordContainer::RecWomen() { 
-    cout << "\nМировые рекорды женщин, установленные за 2024 год:\n"; 
-    for (int i = 0; i < numRecords; i++) { 
-        if (records[i].getYear() == 2024 && records[i].getType() == "Мировой" && records[i].getGender() == "Женский") { 
-            cout << records[i] << endl; 
-        } 
-    } 
-
-    for (int i = 0; i < numOlympicRecords; i++) {
-        if (olympicRecords[i].getYear() == 2024 && olympicRecords[i].getType() == "Мировой" && olympicRecords[i].getGender() == "Женский") {
-            cout << olympicRecords[i] << endl;
+int RecordContainer::countRecordsBySport(const std::string& sport) const {
+    int count = 0;
+    for (unsigned int i = 0; i < size; ++i) {
+        if (records[i]->getSport() == sport) {
+            ++count;
         }
     }
-} 
+    return count;
+}

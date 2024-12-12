@@ -1,98 +1,47 @@
-#include <iostream> 
-#include <fstream> 
-#include <string> 
-#include "record.h" 
+#include "record.h"
 #include "recordOlympic.h"
+#include "worldRecord.h"
 #include "record_cont.h"
+#include <iostream>
 
-#define FILE_NAME "records.txt"
+int main() {
+    RecordContainer container(10);
 
-using namespace std; 
+    // Загрузка данных из файла
+    std::cout << "Загрузка данных из файла 'data.txt'..." << std::endl;
+    container.loadFromFile("data.txt");
 
+    // Вывод всех записей
+    std::cout << "\nВсе записи:\n";
+    container.displayAll();
 
-int main() { 
-    RecordContainer records(10, 5, 10, 1);
+    // Поиск записей женщин за 2024 год
+    std::cout << "\nЗаписи женщин за 2024 год:\n";
+    container.findWomenRecords2024();
 
-    int choice;     
-    do {     
-        cout << "\nВыберите действие:\n";     
-        cout << "1. Показать все записи\n";   
-        cout << "2. Загрузить данные из файла\n";
-        cout << "3. Занести данные в файл\n";     
-        cout << "4. Показать мировые рекорды женщин за 2024 год\n";     
-        cout << "5. Подсчитать количество рекордов по виду спорта\n";   
-        cout << "6. Добавить новую запись\n";  
-        cout << "7. Выход\n";     
-        cout << "> ";    
-        
-        cin >> choice;     
-        switch (choice) {     
-            case 1: {     
-                cout << "\nЗаписи из файла:\n";     
-                records.displayAll();
-                break;     
-            }     
-            case 2: {
-                records.loadFromFile(FILE_NAME);
-                break;   
-            }
-            case 3: {
-                records.saveToFile(FILE_NAME);
-                break;
-            }
-            case 4: {
-                records.RecWomen();     
-                break;                 
-            }    
-            case 5: {     
-                string sport;     
-                cout << "Введите вид спорта: ";     
-                cin.ignore();
-                getline(cin, sport);  
-                int RCount = records.count_Records(sport);     
-                cout << "Количество рекордов в " << sport << ": " << RCount << "\n";     
-                break;     
-            }     
-            case 6: {
-                cout << "Введите 1, чтобы добавит Record" << endl
-                    << "Введите 2, чтобы добавит OlympicRecord" << endl
-                    << ">";
+    // Подсчёт записей по определённому спорту
+    std::string sport = "football";
+    int footballCount = container.countRecordsBySport(sport);
+    std::cout << "\nКоличество записей по спорту '" << sport << "': " << footballCount << "\n";
 
-                int command;
-                cin >> command;
+    // Добавление нового мирового рекорда
+    WorldRecord* newWorldRecord = new WorldRecord(
+        "Плавание", "Баттерфляй", "Индивидуальный", "мужчина", 2024,
+        "Майкл Фелпс", "США", 50.2, "WR-2024-001"
+    );
+    container.addRecord(newWorldRecord);
 
-                switch (command) {
-                    case 1: {
-                        Record newRecord;
-                        cout << "\nВведите данные новой записи:\n";
-                        cin >> newRecord;
-                        records += newRecord;     
-                        break; 
-                    }
-                    case 2: {
-                        RecordOlympic newRecordOlympic;
-                        cout << "\nВведите данные новой записи:\n";
-                        cin >> newRecordOlympic;
-                        records += newRecordOlympic;     
-                        break;
-                    }
-                    default:
-                        break;
-                }
+    // Добавление нового олимпийского рекорда
+    RecordOlympic* newOlympicRecord = new RecordOlympic(
+        "Легкая атлетика", "Бег на 100м", "Индивидуальный", "женщина", 2024,
+        "Шелли-Энн Фрейзер-Прайс", "Ямайка", 10.61, "Париж"
+    );
+    container.addRecord(newOlympicRecord);
 
-                break;
-            }
-            case 7: {
-                cout << "Выход из программы." << endl;     
-                break;   
-            }  
-            default: {
-                cout << "Неверный выбор. Пожалуйста, выберите снова." << endl;
-                break;
-            }
+    // Сохранение всех данных в файл
+    std::cout << "\nСохранение данных в файл 'output.txt'..." << std::endl;
+    container.saveToFile("output.txt");
 
-        }          
-    } while (choice != 7);     
-    
-    return 0;     
+    std::cout << "Программа завершена.\n";
+    return 0;
 }
